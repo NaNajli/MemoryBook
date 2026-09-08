@@ -4,3 +4,5 @@ With a lot of photographs, videos and information, history is lost over time. Th
 Matthew 11:28 Come unto me, all ye that labour and are heavy laden, and I will give you rest. - Moroni Alanis
 
 "There are men who fight for one day and are good. There are others who fight for a year and are better. There are those who fight for many years, and are very good. But there are those who fight their whole lives: these are the indispensable ones." Bertolt Brecht
+
+"It is often in the trial of adversity that we learn those most critical lessons that form our character and shape our destiny."
