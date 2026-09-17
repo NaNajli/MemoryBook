@@ -1,15 +1,25 @@
 {
-  "name": "backend",
+  "name": "memorybook-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "Memory Book Backend API - Authentication, Database, AI Story Generation, and PDF Services",
+  "main": "server.js",
   "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"No tests configured yet\""
+  },
+  "keywords": [
+    "memory-book",
+    "nodejs",
+    "express",
+    "postgresql",
+    "neon",
+    "authentication",
+    "jwt"
+  ],
+  "author": "Smith Eutrope Zephirin",
+  "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
