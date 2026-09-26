@@ -8,7 +8,7 @@ export default async function BookPage() {
   return (
     <div  >
       {book.map((item) => (
-          <ul  key = {item.user_id}>
+          <ul  key = {item.title}>
           <li>
           <h1 >{item.title}</h1>
           <p>{item.description}</p>
