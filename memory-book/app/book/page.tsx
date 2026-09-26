@@ -1,18 +1,23 @@
+import DownloadButton from "./downloadbutton";
+import { getBook } from "@/lib/getBooks";
 
 
-export default function Login() {
+export default async function BookPage() {
+  const book = await getBook();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-      
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-        Book Page
-          </h1>
-          
-        </div>
-        
-      </main>
+    <div  >
+      {book.map((item) => (
+          <ul  key = {item.user_id}>
+          <li>
+          <h1 >{item.title}</h1>
+          <p>{item.description}</p>
+          </li>
+
+        </ul>
+      ))}
+
+      <DownloadButton book={book[0]} />
     </div>
   );
 }
