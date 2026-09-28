@@ -14,8 +14,11 @@ router.get("/dbtest", async (req, res) => {
     const result = await pool.query("SELECT NOW()");
     res.json(result.rows[0]);
   } catch (err) {
+    console.error("Database Error:", err);
+
     res.status(500).json({
-      error: err.message
+      error: err.message,
+      fullError: String(err)
     });
   }
 });
