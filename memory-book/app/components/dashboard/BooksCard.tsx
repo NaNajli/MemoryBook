@@ -61,4 +61,8 @@ export default function BooksCard({ books }: BooksCardProps) {
       )}
     </section>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5b1b7efa70c1f406408acbce3878f787893b48b8
