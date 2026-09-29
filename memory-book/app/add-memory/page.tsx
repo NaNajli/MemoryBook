@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export default function AddMemory() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [images, setImages] = useState<File[]>([]);
   const [topic, setTopic] = useState("");
   const [isTopicSelected, setIsTopicSelected] = useState(false);
   const [description, setDescription] = useState("");
@@ -79,10 +80,17 @@ const suggestions: Record<string, string[]> = {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
+
     if (files) {
-      const imageUrls = Array.from(files).map((file) => 
+      const selectedFiles = Array.from(files);
+      const imageUrls = selectedFiles.map((file) => 
         URL.createObjectURL(file)
       );
+
+      setImages((currentImages) => [
+        ...currentImages,
+        ...selectedFiles,
+      ]);
 
       setImagePreviews((currentImages) => [
         ...currentImages,
@@ -92,6 +100,10 @@ const suggestions: Record<string, string[]> = {
   };
 
   const removeImage = (indexToRemove: number) => {
+    setImages((currentImages) =>
+      currentImages.filter((_, index) => index !== indexToRemove)
+    );
+
     setImagePreviews((currentImage) =>
       currentImage.filter((_, index) => index !== indexToRemove)
     );
@@ -101,16 +113,21 @@ const suggestions: Record<string, string[]> = {
     event.preventDefault();
 
     try {
+
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("topic", topic);
+      formData.append("description", description);
+
+      images.forEach((image) => {
+        formData.append("images", image);
+      }
+
+      );
+
       const response = await fetch("/api/memories", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          topic,
-          description,
-        }),
+        body: formData,
       });
 
       const data = await response.json();
@@ -125,7 +142,9 @@ const suggestions: Record<string, string[]> = {
       setTitle("");
       setTopic("");
       setDescription("");
+      setImages([]);
       setImagePreviews([]);
+      
       setTimeout(() => {
         setSuccessMessage("");
       }, 4000);
