@@ -1,11 +1,18 @@
-import { Page, Text, View, Document, StyleSheet  } from "@react-pdf/renderer";
+import { Page, Text, View, Document, StyleSheet,Tspan ,Svg , PDFViewer  } from "@react-pdf/renderer";
+import { Url } from "next/dist/shared/lib/router/router";
 import React from 'react';
 
 
 export type Book = {
+  id: number; 
   title: string;
   description: string;
+  topic:string
+  file_name : string;
+  image_url?: string; 
 };
+
+const heading = { fontSize: 16 };
 
 const styles = StyleSheet.create({
 
@@ -18,12 +25,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
     borderBottomColor: '#e4e4e7',
     paddingBottom: 12,
   },
   title: {
-    fontSize: 26,
+    fontSize: 46,
     fontFamily: "Cantarell", 
     borderBottomWidth: 3,
     color: '#e0301e',
@@ -46,22 +52,30 @@ const styles = StyleSheet.create({
     borderColor: '#e4e4e7',
     borderStyle: 'solid',
   },
-
-
 });
 
 
-export function MyPdfDocument({ book }: { book: Book }) {
+export function MyPdfDocument({ book }: { book: Book[]}) {
   return (
-   
-    <Document>
-      <Page size="A4"  style={styles.page}>
-        <View style={styles.header}></View>
-        <Text >{book.title}</Text>
-        <Text>{book.description}</Text>
-        <view style={styles.borderFrame}></view>
-      </Page>
-    </Document>
-  );
+
+ <Document>
+  {book.map((item) => (
+    <Page size="A4" style={styles.page} key={item.id}>
+      <Svg viewBox="0 0 120 60" width={240} height={120}>
+    <Text x="24" y="36" fill="#3e3e3e" style={heading}>
+      {item.topic} <Tspan fill="#e82200">{item.title}</Tspan>
+    </Text>
+  </Svg>
+      <Text>{item.title}</Text>
+      <Text>{item.topic}</Text>
+      <Text>{item.description}</Text>
+      <Text>{item.file_name}</Text>
+      <view style={styles.borderFrame}></view> 
+    </Page>
+  ))}
+</Document>
+   );
 }
+
+
 

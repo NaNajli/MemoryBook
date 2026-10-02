@@ -2,15 +2,16 @@
 import { getBook } from "@/lib/getBooks";
 import DownloadButton from "./downloadbutton";
 
+
 export default async function BookPage() {
   const book = await getBook();
-  const nameBook = book[0]
+  const nameBook = book[0];
 
   return (
     <div className="text-center " >
-      <h1 className="text-6xl p-10 mt-4 md:mt-8;">{nameBook.title}</h1>
+      <h1 className="text-6xl p-10 mt-4 md:mt-8;">{nameBook.topic}</h1>
     <div className="button button-small p-5 m-5" >
-      <DownloadButton book={book[0]} />
+      <DownloadButton book={book} />
       </div>
     </div>
 
