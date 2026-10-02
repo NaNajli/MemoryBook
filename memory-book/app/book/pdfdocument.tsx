@@ -1,4 +1,4 @@
-import { Page, Text, View, Document, StyleSheet,Tspan ,Svg , PDFViewer  } from "@react-pdf/renderer";
+import { Page, Text, View, Document, StyleSheet,Tspan ,Svg , PDFViewer, Image  } from "@react-pdf/renderer";
 import { Url } from "next/dist/shared/lib/router/router";
 import React from 'react';
 
@@ -12,7 +12,6 @@ export type Book = {
   image_url?: string; 
 };
 
-const heading = { fontSize: 16 };
 
 const styles = StyleSheet.create({
 
@@ -22,24 +21,38 @@ const styles = StyleSheet.create({
     lineHeight: 1.6,
     color: '#3f3f46',
   },
+
+  heading: {
+  fontSize: 36,
+  color: '#433f3e',
+  FontFamily: "Times-BoldItalic",
+  textAlign: 'center',
+  margin: 20,
+  }
+,
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomColor: '#e4e4e7',
     paddingBottom: 12,
+   
   },
   title: {
-    fontSize: 46,
     fontFamily: "Cantarell", 
     borderBottomWidth: 3,
     color: '#e0301e',
-    marginTop: 40,
+    marginTop: 20,
     paddingBottom: 16,
     borderBottomColor: '#e0301e',
+    textAlign: 'center',
     
   },
   paragraph: {
     marginTop: 20,
+    textAlign: 'center',
+    fontSize: 12,
+    lineHeight: 1.7,
+   
   },
   
   borderFrame: {
@@ -52,6 +65,7 @@ const styles = StyleSheet.create({
     borderColor: '#e4e4e7',
     borderStyle: 'solid',
   },
+
 });
 
 
@@ -61,16 +75,12 @@ export function MyPdfDocument({ book }: { book: Book[]}) {
  <Document>
   {book.map((item) => (
     <Page size="A4" style={styles.page} key={item.id}>
-      <Svg viewBox="0 0 120 60" width={240} height={120}>
-    <Text x="24" y="36" fill="#3e3e3e" style={heading}>
-      {item.topic} <Tspan fill="#e82200">{item.title}</Tspan>
-    </Text>
-  </Svg>
-      <Text>{item.title}</Text>
-      <Text>{item.topic}</Text>
-      <Text>{item.description}</Text>
-      <Text>{item.file_name}</Text>
-      <view style={styles.borderFrame}></view> 
+      <Text style={styles.heading}>{item.title}</Text>
+      <Text style={styles.paragraph}>{item.description}</Text>
+      <Image src={item.image_url || "/default-image.png"}
+      style={{ width: 400, height: 400, marginTop: 20, alignSelf: 'center' }}
+   />
+      <View style={styles.borderFrame}></View> 
     </Page>
   ))}
 </Document>
