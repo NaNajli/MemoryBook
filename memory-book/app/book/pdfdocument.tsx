@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
   FontFamily: "Times-BoldItalic",
   textAlign: 'center',
   margin: 20,
+  textTransform:'upperfirst',
+  
   }
 ,
   header: {
@@ -37,16 +39,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
    
   },
-  title: {
-    fontFamily: "Cantarell", 
-    borderBottomWidth: 3,
-    color: '#e0301e',
-    marginTop: 20,
-    paddingBottom: 16,
-    borderBottomColor: '#e0301e',
-    textAlign: 'center',
-    
-  },
+
   paragraph: {
     marginTop: 20,
     textAlign: 'center',
@@ -57,13 +50,15 @@ const styles = StyleSheet.create({
   
   borderFrame: {
     position: 'absolute',
-    top: 24,
-    left: 24,
-    right: 24,
-    bottom: 24,
+    top: 12,
+    left: 12,
+    right: 12,
+    bottom: 12,
     borderWidth: 1,
     borderColor: '#e4e4e7',
     borderStyle: 'solid',
+    backgroundColor: 'transparent',
+    borderRadius: 8,
   },
 
 });
@@ -75,7 +70,9 @@ export function MyPdfDocument({ book }: { book: Book[]}) {
  <Document>
   {book.map((item) => (
     <Page size="A4" style={styles.page} key={item.id}>
-      <Text style={styles.heading}>{item.title}</Text>
+      <Text style={styles.heading}>
+        {item.title}
+      </Text>
       <Text style={styles.paragraph}>{item.description}</Text>
       <Image src={item.image_url || "/default-image.png"}
       style={{ width: 400, height: 400, marginTop: 20, alignSelf: 'center' }}
