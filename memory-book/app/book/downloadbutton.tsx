@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Book } from "./pdfdocument";
 
-export default function DownloadButton({ book }: { book: Book }) {
+export default function DownloadButton({ book }: { book: Book[] }) {
   const [PDFDownloadLink, setPDFDownloadLink] = useState<any>(null);
   const [MyPdfDocument, setMyPdfDocument] = useState<any>(null);
 
@@ -26,7 +26,7 @@ export default function DownloadButton({ book }: { book: Book }) {
   return (
     <PDFDownloadLink
       document={<MyPdfDocument book={book} />}
-      fileName={book.title}
+      fileName={`${book[0].topic}.pdf`}
     >
       {({ loading }: { loading: boolean }) =>
         loading ? "Generating PDF..." : "Download PDF"
