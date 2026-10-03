@@ -2,13 +2,15 @@ import Link from "next/link";
 import Navigation from "../../components/navigation/Navigation";
 import { getBook } from "@/lib/getBooks";
 
-export default async function BookPage({ 
+export default async function BookPage({
   params,
+  searchParams,
  }: PageProps<"/books/[bookId]">) {
   const { bookId } = await params;
   const id = Number(bookId);
+  const { topic } = await searchParams;
 
-  if(!Number.isInteger(id)) {
+  if(!Number.isSafeInteger(id) || id <= 0 || Array.isArray(topic)) {
     return (
       <>
         <Navigation variant="authenticated" />
@@ -26,7 +28,7 @@ export default async function BookPage({
     );
   }
 
-  const book = await getBook(id);
+  const book = await getBook(id, topic);
 
   return (
     <>
@@ -36,7 +38,7 @@ export default async function BookPage({
         <p className="eyebrow">Memory Book</p>
 
         <h1>
-          {book.length > 0 ? book[0].title : "Empty Memory Book"}
+          {topic !== undefined ? (topic || "Uncategorized") : book.length > 0 ? book[0].book_title : "Empty Memory Book"}
         </h1>
 
         {book.length === 0 ? (
@@ -52,11 +54,13 @@ export default async function BookPage({
                 )}
 
                 {item.image_id && item.image_data && (
+                  // Database images are embedded directly rather than optimized remote URLs.
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={`data:${item.mime_type};base64,${Buffer.from(
                     item.image_data
                   ).toString("base64")}`}
-                    alt={item.file_name}
+                    alt={item.file_name || item.title}
                   />
                 )}
               </article>
@@ -70,4 +74,3 @@ export default async function BookPage({
     </>
   );
 }
-       

@@ -1,4 +1,5 @@
 import pool from "@/lib/db";
+import { getCurrentUserId } from "@/lib/currentUser";
 
 export async function POST(request: Request) {
     const client = await pool.connect();
@@ -24,11 +25,11 @@ try {
         );
     }
 
-    const userId = 1; // we will replace this with the actual user ID from the authentication logic guys
+    const userId = getCurrentUserId();
 
     await client.query("BEGIN");
 
-    let bookResult = await client.query(
+    const bookResult = await client.query(
         `
         SELECT id 
         FROM memory_books
@@ -147,4 +148,3 @@ export async function GET(){
     );
   }
 }
-

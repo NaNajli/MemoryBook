@@ -1,12 +1,14 @@
-import BooksCard, { type MemoryBookSummary } from "../components/dashboard/BooksCard";
+import BooksCard from "../components/dashboard/BooksCard";
+import { connection } from "next/server";
+import { loadBookCollection } from "@/lib/bookCollection";
+import { getCurrentUserId } from "@/lib/currentUser";
 import DashboardTabs from "../components/dashboard/DashboardTabs";
 import InviteCard from "../components/dashboard/InviteCard";
 import Navigation from "../components/navigation/Navigation";
 
-// TODO: Load the account name, secure share URL, and books from the authenticated session/database.
-const books: MemoryBookSummary[] = [];
-
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await connection();
+  const { books, error } = await loadBookCollection(getCurrentUserId());
   return (
     <>
       <Navigation variant="authenticated" />
@@ -25,7 +27,7 @@ export default function DashboardPage() {
 
           <div className="dashboard-grid">
             <InviteCard />
-            <BooksCard books={books} />
+            <BooksCard books={books} error={error} />
           </div>
         </div>
       </main>
