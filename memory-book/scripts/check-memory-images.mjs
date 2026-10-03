@@ -20,6 +20,15 @@ async function checkImages() {
       ORDER BY created_at DESC
     `);
 
+    
+    const result2 = await pool.query(
+    `SELECT id, memory_id, file_name
+      FROM memory_images
+      WHERE file_name = $1`,
+    ["Picture Me.jpeg"]
+    );
+
+console.log(result.rows);
     console.table(result.rows);
     } catch (error) {
     console.error("Error checking images:", error);
@@ -27,5 +36,6 @@ async function checkImages() {
     await pool.end();
   }
 }
+
 
 checkImages();
