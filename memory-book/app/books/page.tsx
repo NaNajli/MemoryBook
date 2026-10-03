@@ -1,12 +1,13 @@
 import DashboardTabs from "../components/dashboard/DashboardTabs";
 import SortableBooks from "../components/dashboard/SortableBooks";
-import type { MemoryBookSummary } from "../components/dashboard/BooksCard";
+import { connection } from "next/server";
+import { loadBookCollection } from "@/lib/bookCollection";
+import { getCurrentUserId } from "@/lib/currentUser";
 import Navigation from "../components/navigation/Navigation";
 
-// TODO: Replace with books loaded for the authenticated account.
-const books: MemoryBookSummary[] = [];
-
-export default function BooksPage() {
+export default async function BooksPage() {
+  await connection();
+  const { books, error } = await loadBookCollection(getCurrentUserId());
   return (
     <>
       <Navigation variant="authenticated" />
@@ -18,7 +19,7 @@ export default function BooksPage() {
             <p>Browse and sort every memory book in your family collection.</p>
           </div>
           <DashboardTabs activeTab="dashboard" />
-          <SortableBooks books={books} />
+          <SortableBooks books={books} error={error} />
         </div>
       </main>
     </>

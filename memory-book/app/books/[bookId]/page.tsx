@@ -1,18 +1,6 @@
-import Link from "next/link";
-import Navigation from "../../components/navigation/Navigation";
-
-export default async function BookPage({ params }: PageProps<"/books/[bookId]">) {
-  await params;
-
-  return (
-    <>
-      <Navigation variant="authenticated" />
-      <main className="book-placeholder page-shell">
-        <p className="eyebrow">Memory Book</p>
-        <h1>Book details coming soon</h1>
-        <p>This page is ready for the selected book once database content is connected.</p>
-        <Link className="button button-secondary" href="/dashboard">Back to Dashboard</Link>
-      </main>
-    </>
-  );
+export default function BookPage() {
+  // Intentionally blank until the image page is integrated.
+  // Read params.bookId and searchParams.topic in that implementation.
+  // An empty topic means uncategorized; no topic means an empty book.
+  return null;
 }

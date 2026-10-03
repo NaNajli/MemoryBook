@@ -1346,3 +1346,16 @@ h3 {
     transition-duration: .01ms !important;
   }
 }
+
+.collection-selectable {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.collection-selectable > a { flex: 1; min-width: 0; }
+.collection-selectable > input { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--sage); }
+.collection-download { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e8e0d5; }
+.collection-download-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+.collection-download p { margin-top: 12px; color: var(--muted); font-size: .85rem; }
+.collection-download button:disabled { opacity: .65; cursor: wait; }
