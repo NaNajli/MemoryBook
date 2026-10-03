@@ -24,6 +24,8 @@ export async function getBook(bookId: number) {
 }
 
 
+
+
 export async function getMemoryBooks() {
     const result = await pool.query(`
         SELECT
