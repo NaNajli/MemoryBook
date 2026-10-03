@@ -4,8 +4,8 @@ import DownloadButton from "./downloadbutton";
 // import App from "./pdfviewer";
 
 export default async function BookPage() {
-  const book = await getBook();
-  const nameBook = book[0];
+  const book = await getBook(1);
+  const nameBook = book[0]
 
   return (
     
@@ -21,18 +21,22 @@ export default async function BookPage() {
 }
 
 export async function BooksList() {
-  const book = await getBook();
+  const book = await getBook(1);
+
+  console.log("BOOK DATA:", book)
   
   return (
     
     <div  >
       {book.map((item) => (
-          <ul  key = {item.title}>
-          <li>
-          <h1 >{item.title}</h1>
-          <p>{item.description}</p>
-          </li>
-        </ul>
+          <ul key={`${item.id}-${item.image_id}`}>
+            <li>
+              <h1>{item.title}</h1>
+              <p>{item.description}</p>
+              <p>Image ID: {item.image_id}</p>
+              <p>File Name: {item.file_name}</p>
+            </li>
+          </ul>
       ))}
     </div>
     
