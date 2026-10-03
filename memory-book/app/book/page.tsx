@@ -8,7 +8,7 @@ export default async function BookPage() {
   const nameBook = book[0];
 
   return (
-    
+  
     <div className="text-center " >
       {/* <App book={book} /> */}
       <h1 className="text-6xl p-10 mt-4 md:mt-8;">{nameBook.topic}</h1>
@@ -16,6 +16,7 @@ export default async function BookPage() {
       <DownloadButton book={book} />
       </div>
     </div>
+    
 
   );
 }
