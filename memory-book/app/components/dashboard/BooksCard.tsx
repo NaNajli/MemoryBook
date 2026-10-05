@@ -1,17 +1,17 @@
-import Link from "next/link";
+"use client";
 
-export type MemoryBookSummary = {
-  id: string;
-  name: string;
-  updatedAt?: string;
-};
+import Link from "next/link";
+import { CollectionDownloadActions, useCollectionDownload } from "./CollectionDownload";
+
+import type { MemoryBookSummary } from "@/lib/bookCollection";
 
 type BooksCardProps = {
   books: MemoryBookSummary[];
+  error?: boolean;
 };
 
-export default function BooksCard({ books }: BooksCardProps) {
-  const visibleBooks = books.slice(0, 5);
+export default function BooksCard({ books, error = false }: BooksCardProps) {
+  const download = useCollectionDownload();
 
   return (
     <section className="dashboard-card books-card" aria-labelledby="books-heading">
@@ -31,15 +31,25 @@ export default function BooksCard({ books }: BooksCardProps) {
         {books.length > 5 && <Link className="see-more-link" href="/books">See More <span aria-hidden="true">→</span></Link>}
       </div>
 
-      {visibleBooks.length > 0 ? (
+      {error ? (
+        <div className="books-empty-state" role="alert">
+          <h3>Unable to load your collection</h3>
+          <p>Please refresh the page to try again.</p>
+        </div>
+      ) : books.length > 0 ? (
         <ul className="dashboard-book-list">
-          {visibleBooks.map((book) => (
-            <li key={book.id}>
-              <Link href={`/books/${book.id}`}>
+          {books.map((book) => (
+            <li key={book.id} className={download.selecting ? "collection-selectable" : undefined}>
+              {download.selecting && (
+                <input type="checkbox" aria-label={`Select ${book.name} in ${book.bookTitle}`}
+                  checked={download.selected.includes(book.id)} disabled={download.busy}
+                  onChange={() => download.toggle(book.id)} />
+              )}
+              <Link href={book.href}>
                 <span className="book-spine" aria-hidden="true" />
                 <span className="book-list-copy">
                   <strong>{book.name}</strong>
-                  {book.updatedAt && <span>Updated {book.updatedAt}</span>}
+                  <span>{book.bookTitle}</span>
                 </span>
                 <span className="book-list-arrow" aria-hidden="true">→</span>
               </Link>
@@ -56,9 +66,10 @@ export default function BooksCard({ books }: BooksCardProps) {
             </svg>
           </span>
           <h3>Your memory books will appear here</h3>
-          <p>This section is ready to display book records once the database is connected.</p>
+          <p>Add a memory to start your collection.</p>
         </div>
       )}
+      {!error && books.length > 0 && <CollectionDownloadActions state={download} />}
     </section>
   );
 }
