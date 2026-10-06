@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
     lineHeight: 1.7,
-    
    
   },
   
@@ -61,6 +60,61 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 8,
   },
+  coverPage: {
+    backgroundColor: '#ccced2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+   coverFrame: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: "#8b7355",
+    padding: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  coverSmall: {
+    fontSize: 12,
+    letterSpacing: 3,
+    marginBottom: 30,
+  },
+coverTitle: {
+    fontSize: 34,
+    textAlign: "center",
+    fontFamily: "Times-Roman",
+  },
+
+  coverSubtitle: {
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 25,
+    lineHeight: 1.6,
+  },
+
+  coverFooter: {
+    position: "absolute",
+    bottom: 40,
+    fontSize: 11,
+  },
+ decorativeLine: {
+    width: 80,
+    borderBottomWidth: 1,
+    borderBottomColor: "#8b7355",
+    marginVertical: 15,
+    alignSelf: "center",
+  },
+   pageFooter: {
+    position: "absolute",
+    bottom: 35,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    fontSize: 12,
+  },
+
+
 
 });
 
@@ -69,6 +123,27 @@ export function MyPdfDocument({ book }: { book: Book[]}) {
   return (
 
  <Document>
+  <Page>
+  <Page size="A4" style={styles.coverPage}></Page>
+  <View style={styles.coverFrame}>
+          <Text style={styles.coverSmall}>OUR STORY</Text>
+
+          <Text style={styles.coverTitle}>
+            {book[0]?.title || "Family Memories"}
+          </Text>
+
+          <View style={styles.decorativeLine} />
+
+          <Text style={styles.coverSubtitle}>
+            A book filled with memories, moments, and special people.
+          </Text>
+
+          <Text style={styles.coverFooter}>
+           Memories to cherish forever
+          </Text>
+        </View>
+      </Page>
+
   {book.map((item) => (
     <Page size="A4" style={styles.page} key={item.id}>
       <Text style={styles.heading}>
@@ -79,11 +154,13 @@ export function MyPdfDocument({ book }: { book: Book[]}) {
       style={{ width: 400, height: 400, marginTop: 20, alignSelf: 'center' }}
    />
       <View style={styles.borderFrame}></View> 
+      <View style={styles.pageFooter}>
+            <Text>♥</Text>
+          </View>
+
+
     </Page>
   ))}
 </Document>
    );
 }
-
-
-
