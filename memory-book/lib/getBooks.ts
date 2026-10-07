@@ -6,8 +6,7 @@ import { getCurrentUserId } from "@/lib/currentUser";
 export async function getBook(bookId: number = 1, topic?: string) {
   const result = await pool.query(
     `SELECT m.id, m.title, m.description, m.topic, b.title AS book_title,
-            i.id AS image_id, i.file_name, i.mime_type, i.image_data,
-            'data:' || i.mime_type || ';base64,' || encode(i.image_data, 'base64') AS image_url
+            i.id AS image_id, i.file_name, i.mime_type, i.image_url
        FROM memories m
        JOIN memory_books b ON b.id = m.memory_book_id
        LEFT JOIN memory_images i ON i.memory_id = m.id
@@ -16,6 +15,7 @@ export async function getBook(bookId: number = 1, topic?: string) {
       ORDER BY m.created_at DESC, m.id, i.id`,
     [bookId, getCurrentUserId(), topic === undefined, topic?.trim() || null],
   );
+
   return result.rows;
 }
 
@@ -25,5 +25,6 @@ export async function getMemoryBooks() {
       WHERE user_id = $1 ORDER BY created_at DESC`,
     [getCurrentUserId()],
   );
+
   return result.rows;
 }
