@@ -10,6 +10,8 @@ export default function AddMemory() {
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
 
   const topics = [
@@ -112,6 +114,10 @@ const suggestions: Record<string, string[]> = {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSaving) return;
+    setIsSaving(true);
+    setErrorMessage("");
+    setSuccessMessage("");
 
     try {
 
@@ -131,11 +137,12 @@ const suggestions: Record<string, string[]> = {
         body: formData,
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
       if(!response.ok) {
-        throw new Error(data.message || "Failed to save memory");
+        throw new Error(data?.message || `Failed to save memory (HTTP ${response.status}). Please try again.`);
       }
+      if (!data?.success) throw new Error("The server did not confirm that your memory was saved.");
 
       console.log("Memory saved successfully:", data);
 
@@ -151,6 +158,9 @@ const suggestions: Record<string, string[]> = {
       }, 4000);
     } catch (error) {
       console.error("Error saving memory:", error);
+      setErrorMessage(error instanceof Error ? error.message : "Failed to save memory. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -173,6 +183,11 @@ const suggestions: Record<string, string[]> = {
         </p>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {errorMessage && (
+            <p role="alert" className="rounded-xl border border-red-300 bg-red-50 p-4 text-red-800">
+              {errorMessage}
+            </p>
+          )}
           <div>
             <label className="block mb-3 text-xl font-serif font-semibold text-[#403D35]">
               Memory Title
@@ -310,9 +325,10 @@ const suggestions: Record<string, string[]> = {
 
           <button
             type="submit"
+            disabled={isSaving}
             className="w-full bg-[#65755B] text-[#ffffff] py-4 rounded-xl text-lg font-medium hover:bg-[#83a171] transition cursor-pointer"
           >
-            Save Memory
+            {isSaving ? "Saving…" : "Save Memory"}
           </button>
         </form>
       </div>
