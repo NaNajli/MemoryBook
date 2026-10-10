@@ -43,9 +43,9 @@ export default async function BookPage({
           <span > ˖᯽˖</span>
           </div>
 
-        {/* <h1>
+        <h1>
           {topic !== undefined ? (topic || "Uncategorized") : book.length > 0 ? book[0].book_title : "Empty Memory Book"}
-        </h1> */}
+        </h1>
 
         {book.length === 0 ? (
           <p>No memories in this book yet.</p>
