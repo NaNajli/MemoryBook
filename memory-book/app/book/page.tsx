@@ -2,7 +2,7 @@
 import { getBook } from "@/lib/getBooks";
 import DownloadButton from "./downloadbutton";
 import { connection } from "next/server";
-// import App from "./pdfviewer";
+import App from "./pdfviewer";
 
 export default async function BookPage() {
   await connection();
