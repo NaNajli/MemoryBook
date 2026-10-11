@@ -1,6 +1,10 @@
+import { notFound } from "next/navigation";
+import { resolveCollectionUser } from "@/lib/shareLinks";
 import Link from "next/link";
 import Navigation from "../../components/navigation/Navigation";
 import { getBook } from "@/lib/getBooks";
+
+export const metadata = { robots: { index: false, follow: false }, referrer: "no-referrer" };
 
 export default async function BookPage({
   params,
@@ -8,9 +12,12 @@ export default async function BookPage({
  }: PageProps<"/books/[bookId]">) {
   const { bookId } = await params;
   const id = Number(bookId);
-  const { topic } = await searchParams;
+  const { topic, share, userId: requestedUserId } = await searchParams;
+  if (requestedUserId !== undefined || Array.isArray(share)) notFound();
+  const userId = await resolveCollectionUser(share);
+  if (userId === null) notFound();
 
-  if(!Number.isSafeInteger(id) || id <= 0 || Array.isArray(topic)) {
+  if(!Number.isSafeInteger(id) || id <= 0 || Array.isArray(topic) || Array.isArray(requestedUserId) || !Number.isSafeInteger(userId) || userId <= 0) {
     return (
       <>
         <Navigation variant="authenticated" />
@@ -20,7 +27,7 @@ export default async function BookPage({
 
           <h1>Invalid Book ID</h1>
 
-          <Link className="button button-secondary" href="/books">
+          <Link className="button button-secondary" href={share ? `/books?share=${share}` : "/books"}>
           Back to Books
           </Link>
         </main>
@@ -28,7 +35,7 @@ export default async function BookPage({
     );
   }
 
-  const book = await getBook(id, topic);
+  const book = await getBook(id, topic, userId);
 
   return (
     <>
@@ -53,21 +60,15 @@ export default async function BookPage({
                   <p>{item.description}</p>
                 )}
 
-                {item.image_id && item.image_data && (
-                  // Database images are embedded directly rather than optimized remote URLs.
+                {item.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={`data:${item.mime_type};base64,${Buffer.from(
-                    item.image_data
-                  ).toString("base64")}`}
-                    alt={item.file_name || item.title}
-                  />
+                  <img src={item.image_url} alt={item.file_name || item.title} />
                 )}
               </article>
             ))}
           </div>
         )}
-        <Link className="button button-secondary" href="/books">
+        <Link className="button button-secondary" href={share ? `/books?share=${share}` : "/books"}>
           Back to Books
         </Link>
       </main>

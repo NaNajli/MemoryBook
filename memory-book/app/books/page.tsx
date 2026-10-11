@@ -2,12 +2,19 @@ import DashboardTabs from "../components/dashboard/DashboardTabs";
 import SortableBooks from "../components/dashboard/SortableBooks";
 import { connection } from "next/server";
 import { loadBookCollection } from "@/lib/bookCollection";
-import { getCurrentUserId } from "@/lib/currentUser";
+import { resolveCollectionUser } from "@/lib/shareLinks";
+import { notFound } from "next/navigation";
 import Navigation from "../components/navigation/Navigation";
 
-export default async function BooksPage() {
+export const metadata = { robots: { index: false, follow: false }, referrer: "no-referrer" };
+
+export default async function BooksPage({ searchParams }: { searchParams: Promise<{ share?: string; userId?: string }> }) {
   await connection();
-  const { books, error } = await loadBookCollection(getCurrentUserId());
+  const { share, userId: legacyId } = await searchParams;
+  if (legacyId !== undefined) notFound();
+  const userId = await resolveCollectionUser(share);
+  if (userId === null) notFound();
+  const { books, error } = await loadBookCollection(userId, share);
   return (
     <>
       <Navigation variant="authenticated" />
@@ -18,7 +25,7 @@ export default async function BooksPage() {
             <h1>All Memory Books</h1>
             <p>Browse and sort every memory book in your family collection.</p>
           </div>
-          <DashboardTabs activeTab="dashboard" />
+          <DashboardTabs activeTab="dashboard" userId={userId} shareToken={share} />
           <SortableBooks books={books} error={error} />
         </div>
       </main>

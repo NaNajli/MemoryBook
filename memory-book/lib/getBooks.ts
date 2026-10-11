@@ -3,7 +3,7 @@ import { getCurrentUserId } from "@/lib/currentUser";
 
 // Shared by the book detail page and the existing single-book PDF view.
 // Undefined topic loads the whole book; an empty topic loads uncategorized memories.
-export async function getBook(bookId: number = 1, topic?: string) {
+export async function getBook(bookId: number = 1, topic?: string, userId = getCurrentUserId()) {
   const result = await pool.query(
     `SELECT m.id, m.title, m.description, m.topic, b.title AS book_title,
             i.id AS image_id, i.file_name, i.mime_type, i.image_url
@@ -13,7 +13,7 @@ export async function getBook(bookId: number = 1, topic?: string) {
       WHERE b.id = $1 AND b.user_id = $2
         AND ($3::boolean OR NULLIF(BTRIM(m.topic), '') IS NOT DISTINCT FROM $4::text)
       ORDER BY m.created_at DESC, m.id, i.id`,
-    [bookId, getCurrentUserId(), topic === undefined, topic?.trim() || null],
+    [bookId, userId, topic === undefined, topic?.trim() || null],
   );
 
   return result.rows;
