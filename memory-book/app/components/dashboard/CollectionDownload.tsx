@@ -19,7 +19,7 @@ export function useCollectionDownload() {
       const response = await fetch("/api/books/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selected }),
+        body: JSON.stringify({ selected, share: new URL(window.location.href).searchParams.get("share") ?? window.location.pathname.match(/^\/share\/([0-9a-f]{64})$/)?.[1] }),
       });
       if (!response.ok) {
         const result = await response.json();

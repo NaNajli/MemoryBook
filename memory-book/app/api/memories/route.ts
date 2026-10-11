@@ -1,5 +1,5 @@
 import pool from "@/lib/db";
-import { getCurrentUserId } from "@/lib/currentUser";
+import { resolveCollectionUser } from "@/lib/shareLinks";
 import { put } from "@vercel/blob";
 
 export async function POST(request: Request) {
@@ -26,7 +26,18 @@ const images = formData
       );
     }
 
-    const userId = getCurrentUserId();
+    if (formData.has("userId")) {
+      return Response.json({ success: false, message: "Please use a valid share link." }, { status: 400 });
+    }
+    const userId = await resolveCollectionUser(formData.get("share"));
+    if (userId === null) {
+      return Response.json({ success: false, message: "Invalid or revoked share link." }, { status: 403 });
+    }
+
+    const user = await client.query("SELECT id FROM users WHERE id = $1", [userId]);
+    if (!user.rows.length) {
+      return Response.json({ success: false, message: "Shared user not found." }, { status: 404 });
+    }
 
     await client.query("BEGIN");
 
@@ -136,19 +147,24 @@ return Response.json({
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const params = new URL(request.url).searchParams;
+    if (params.has("userId")) return Response.json({ message: "Use a share link." }, { status: 400 });
+    const userId = await resolveCollectionUser(params.get("share"));
+    if (userId === null) return Response.json({ message: "Invalid share link." }, { status: 403 });
     const result = await pool.query(`
       SELECT
-        id,
+        m.id,
         memory_book_id,
-        title,
+        m.title,
         topic,
         description,
-        created_at
-      FROM memories
-      ORDER BY created_at DESC;
-    `);
+        m.created_at
+      FROM memories m JOIN memory_books b ON b.id = m.memory_book_id
+      WHERE b.user_id = $1
+      ORDER BY m.created_at DESC;
+    `, [userId]);
 
     return Response.json({
       success: true,
