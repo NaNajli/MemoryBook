@@ -3,6 +3,7 @@ import { resolveCollectionUser } from "@/lib/shareLinks";
 import Link from "next/link";
 import Navigation from "../../components/navigation/Navigation";
 import { getBook } from "@/lib/getBooks";
+import DownloadButton from "../../book/downloadbutton";
 
 export const metadata = { robots: { index: false, follow: false }, referrer: "no-referrer" };
 
@@ -36,13 +37,24 @@ export default async function BookPage({
   }
 
   const book = await getBook(id, topic, userId);
+  const pdfBook = book.map(({ id, title, description, topic, file_name, image_url }) => ({
+    id, title, description, topic, file_name, image_url,
+  }));
 
   return (
     <>
       <Navigation variant="authenticated" />
 
-      <main className="book-page-shell">
+      <main className="book-page-shell text-center">
         <p className="eyebrow">Memory Book</p>
+        <span className="doodle-heart" aria-hidden="true">♡</span>
+        <div className="mx-auto flex max-w-4xl items-center gap-x-4 rounded-xl bg-white p-6 shadow-lg outline outline-black/5 dark:bg-slate-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10 mb-10 mt-10">
+          <span aria-hidden="true">˖᯽˖</span>
+          <p className="text-gray-500 dark:text-gray-400 p-10 text-2xl">
+            Thank you for sharing your journey with us. All your treasured contributions have been woven together into a timeless keepsake. Download your copy today and hold onto these memories forever.
+          </p>
+          <span aria-hidden="true">˖᯽˖</span>
+        </div>
 
         <h1>
           {topic !== undefined ? (topic || "Uncategorized") : book.length > 0 ? book[0].book_title : "Empty Memory Book"}
@@ -71,6 +83,11 @@ export default async function BookPage({
         <Link className="button button-secondary" href={share ? `/books?share=${share}` : "/books"}>
           Back to Books
         </Link>
+        {book.length > 0 && (
+          <div className="button button-small p-5 m-5">
+            <DownloadButton book={pdfBook} />
+          </div>
+        )}
       </main>
     </>
   );
