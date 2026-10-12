@@ -9,7 +9,7 @@ export type Book = {
   description: string;
   topic:string
   file_name : string;
-  image_url?: string; 
+  image_id?: string; 
 };
 
 
@@ -123,13 +123,12 @@ export function MyPdfDocument({ book }: { book: Book[]}) {
   return (
 
  <Document>
-  <Page>
-  <Page size="A4" style={styles.coverPage}></Page>
+  <Page size="A4" style={styles.coverPage}>
   <View style={styles.coverFrame}>
           <Text style={styles.coverSmall}>OUR STORY</Text>
 
           <Text style={styles.coverTitle}>
-            {book[0]?.title || "Family Memories"}
+            {book[0]?.topic || "Family Memories"}
           </Text>
 
           <View style={styles.decorativeLine} />
@@ -150,15 +149,12 @@ export function MyPdfDocument({ book }: { book: Book[]}) {
         {item.title}
       </Text>
       <Text style={styles.paragraph}>{item.description}</Text>
-      <Image src={item.image_url || "/default-image.png"}
+      <Image src={item.image_id || "/default-image.png"}
       style={{ width: 400, height: 400, marginTop: 20, alignSelf: 'center' }}
    />
       <View style={styles.borderFrame}></View> 
       <View style={styles.pageFooter}>
-            <Text>♥</Text>
           </View>
-
-
     </Page>
   ))}
 </Document>

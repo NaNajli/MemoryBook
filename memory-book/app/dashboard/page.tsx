@@ -3,9 +3,6 @@ import BooksCard from "../components/dashboard/BooksCard";
 import { connection } from "next/server";
 import { loadBookCollection } from "@/lib/bookCollection";
 import { getCurrentUserId } from "@/lib/currentUser";
-import DashboardTabs from "../components/dashboard/DashboardTabs";
-import InviteCard from "../components/dashboard/InviteCard";
-import Navigation from "../components/navigation/Navigation";
 
 export default async function DashboardPage() {
   await connection();

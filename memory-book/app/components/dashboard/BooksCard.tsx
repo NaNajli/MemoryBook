@@ -12,6 +12,8 @@ type BooksCardProps = {
 
 export default function BooksCard({ books, error = false }: BooksCardProps) {
   const download = useCollectionDownload();
+  const shareToken = books[0] ? new URL(books[0].href, "http://localhost").searchParams.get("share") : null;
+  const allBooksHref = shareToken ? `/books?share=${shareToken}` : "/books";
 
   return (
     <section className="dashboard-card books-card" aria-labelledby="books-heading">
@@ -28,7 +30,7 @@ export default function BooksCard({ books, error = false }: BooksCardProps) {
             <h2 id="books-heading">Memory Books</h2>
           </div>
         </div>
-        {books.length > 5 && <Link className="see-more-link" href="/books">See More <span aria-hidden="true">→</span></Link>}
+        {books.length > 5 && <Link className="see-more-link" href={allBooksHref}>See More <span aria-hidden="true">→</span></Link>}
       </div>
 
       {error ? (
