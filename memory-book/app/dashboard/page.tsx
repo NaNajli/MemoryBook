@@ -1,5 +1,9 @@
 import DashboardClient from "./DashboardClient";
 import BooksCard from "../components/dashboard/BooksCard";
+import DashboardTabs from "../components/dashboard/DashboardTabs";
+import InviteCard from "../components/dashboard/InviteCard";
+import Navigation from "../components/navigation/Navigation";
+
 import { connection } from "next/server";
 import { loadBookCollection } from "@/lib/bookCollection";
 import { getCurrentUserId } from "@/lib/currentUser";
@@ -35,7 +39,7 @@ export default async function DashboardPage() {
           <DashboardTabs activeTab="dashboard" />
 
           <div className="dashboard-grid">
-            <InviteCard />
+            <InviteCard userId={0} />
             <BooksCard books={books} error={error} />
           </div>
         </div>
