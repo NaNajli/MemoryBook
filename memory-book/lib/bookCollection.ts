@@ -14,7 +14,7 @@ type CollectionRow = {
   memory_count: string;
 };
 
-export async function getBookCollection(userId: number): Promise<MemoryBookSummary[]> {
+export async function getBookCollection(userId: number, shareToken?: string): Promise<MemoryBookSummary[]> {
   const result = await pool.query<CollectionRow>(
     `SELECT b.id AS book_id, b.title AS book_title,
             NULLIF(BTRIM(m.topic), '') AS topic, COUNT(m.id) AS memory_count
@@ -28,7 +28,9 @@ export async function getBookCollection(userId: number): Promise<MemoryBookSumma
 
   return result.rows.map((row) => {
     const emptyBook = Number(row.memory_count) === 0;
-    const query = emptyBook ? "" : `?${new URLSearchParams({ topic: row.topic ?? "" })}`;
+    const params = new URLSearchParams(shareToken ? { share: shareToken } : {});
+    if (!emptyBook) params.set("topic", row.topic ?? "");
+    const query = `?${params}`;
 
     return {
       id: JSON.stringify([row.book_id, row.topic]),
@@ -39,9 +41,9 @@ export async function getBookCollection(userId: number): Promise<MemoryBookSumma
   });
 }
 
-export async function loadBookCollection(userId: number) {
+export async function loadBookCollection(userId: number, shareToken?: string) {
   try {
-    return { books: await getBookCollection(userId), error: false };
+    return { books: await getBookCollection(userId, shareToken), error: false };
   } catch (error) {
     console.error("Unable to load the book collection:", error);
     return { books: [], error: true };

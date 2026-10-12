@@ -23,7 +23,9 @@ export default function Login() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        setMessage("Login successful");
+
+        // Redirect directly to dashboard
+        window.location.href = "/dashboard";
       } else {
         setMessage(data.error || "Login failed");
       }

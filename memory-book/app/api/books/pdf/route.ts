@@ -1,7 +1,7 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CollectionPdf } from "@/lib/CollectionPdf";
 import pool from "@/lib/db";
-import { getCurrentUserId } from "@/lib/currentUser";
+import { resolveCollectionUser } from "@/lib/shareLinks";
 
 export const runtime = "nodejs";
 
@@ -10,8 +10,13 @@ type ImageRow = { id: number; image_data: Buffer };
 
 export async function POST(request: Request) {
   let selected: Selection[];
+  let userId: number;
   try {
     const body = await request.json();
+    if (body.userId !== undefined) throw new Error();
+    const resolvedUser = await resolveCollectionUser(body.share);
+    if (resolvedUser === null) return Response.json({ message: "Invalid share link." }, { status: 403 });
+    userId = resolvedUser;
     if (!Array.isArray(body.selected) || body.selected.length > 1000) throw new Error();
     selected = body.selected.map((value: unknown) => {
       if (typeof value !== "string") throw new Error();
@@ -38,7 +43,7 @@ export async function POST(request: Request) {
                AND s.topic IS NOT DISTINCT FROM NULLIF(BTRIM(m.topic), '')
           ))
         ORDER BY b.title, b.id, NULLIF(BTRIM(m.topic), '') NULLS LAST, m.created_at, m.id, i.id`,
-      [getCurrentUserId(), JSON.stringify(selected)],
+      [userId, JSON.stringify(selected)],
     );
     if (!result.rows.length) {
       return Response.json({ message: "No images were found for this download." }, { status: 404 });
