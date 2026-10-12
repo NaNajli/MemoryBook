@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 const authenticatedLinks = [
@@ -7,19 +9,37 @@ const authenticatedLinks = [
 ];
 
 export default function AuthenticatedNavigation() {
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
+
   return (
     <header className="site-header">
       <nav className="site-nav page-shell" aria-label="Account navigation">
         <Link className="brand" href="/">
-          <span className="brand-mark brand-initials" aria-hidden="true">MB</span>
+          <span className="brand-mark brand-initials" aria-hidden="true">
+            MB
+          </span>
           <span>Memory Book</span>
         </Link>
+
         <div className="nav-menu authenticated-menu">
           <div className="nav-links">
-            {authenticatedLinks.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
+            {authenticatedLinks.map((link) => (
+              <Link key={link.href} href={link.href}>
+                {link.label}
+              </Link>
+            ))}
           </div>
-          {/* TODO: Connect this control to the authentication provider's sign-out action. */}
-          <button className="nav-logout" type="button" disabled title="Available after authentication is connected">Log Out</button>
+
+          <button
+            className="nav-logout"
+            type="button"
+            onClick={handleLogout}
+          >
+            Log Out
+          </button>
         </div>
       </nav>
     </header>
