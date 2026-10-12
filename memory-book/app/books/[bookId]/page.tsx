@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navigation from "../../components/navigation/Navigation";
 import { getBook } from "@/lib/getBooks";
 import DownloadButton from "../../book/downloadbutton";
+import ViewBook from "./ViewBook";
 
 export const metadata = { robots: { index: false, follow: false }, referrer: "no-referrer" };
 
@@ -63,21 +64,15 @@ export default async function BookPage({
         {book.length === 0 ? (
           <p>No memories in this book yet.</p>
         ) : (
-          <div>
-            {book.map((item) => (
-              <article key={`${item.id}-${item.image_id ?? "no-image"}`}>
-                <h2>{item.title}</h2>
-
-                {item.description && (
-                  <p>{item.description}</p>
-                )}
-
-                {item.image_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.image_url} alt={item.file_name || item.title} />
-                )}
-              </article>
-            ))}
+          <div className="button button-small p-5 m-5">
+           <ViewBook memories={book.map((item) => ({
+             id: item.id,
+             image_id: item.image_id,
+             title: item.title,
+             description: item.description,
+             file_name: item.file_name,
+             imageSrc: item.image_url,
+}))} />
           </div>
         )}
         <Link className="button button-secondary" href={share ? `/books?share=${share}` : "/books"}>
