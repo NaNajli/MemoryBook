@@ -22,7 +22,13 @@ export default function DownloadButton({ book }: { book: Book[] }) {
   if (!PDFDownloadLink || !MyPdfDocument) {
     return <p>Loading PDF...</p>;
   }
-
+console.log(
+  "Images received by PDF:",
+  book.map((item) => ({
+    title: item.title,
+    image_url: item.image_url,
+  }))
+);
   return (
     <PDFDownloadLink
       document={<MyPdfDocument book={book} />}
