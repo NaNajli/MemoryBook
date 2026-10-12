@@ -27,7 +27,13 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("Account created successfully");
+        setMessage(
+          "Account created successfully. Redirecting to login..."
+        );
+
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
       } else {
         setMessage(data.error || "Registration failed");
       }
