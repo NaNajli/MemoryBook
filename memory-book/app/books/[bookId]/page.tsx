@@ -84,6 +84,10 @@ export default async function BookPage({
             <DownloadButton book={book} />  
           </div>
         )}
+        {/* Working in the view of the book */}
+        <Link className="button button-secondary" href="/book">
+          View
+        </Link>
       </main>
     </>
   );
