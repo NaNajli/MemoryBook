@@ -1,4 +1,4 @@
-import { getOrCreateShareToken } from "@/lib/shareLinks";
+import { getCurrentUserId } from "@/lib/currentUser";
 import { notFound } from "next/navigation";
 import BooksCard from "../../components/dashboard/BooksCard";
 import { connection } from "next/server";
@@ -10,13 +10,13 @@ import Navigation from "../../components/navigation/Navigation";
 
 export default async function DashboardPage({ params }: { params: Promise<{ userId: string }> }) {
   await connection();
+  const authenticatedUserId = await getCurrentUserId();
   const { userId: requestedId } = await params;
   const userId = Number(requestedId);
-  if (!Number.isSafeInteger(userId) || userId <= 0) notFound();
+  if (!Number.isSafeInteger(userId) || userId <= 0 || userId !== authenticatedUserId) notFound();
   const user = await pool.query("SELECT name FROM users WHERE id = $1", [userId]);
   if (!user.rows.length) notFound();
-  const shareToken = await getOrCreateShareToken(userId);
-  const { books, error } = await loadBookCollection(userId, shareToken);
+  const { books, error } = await loadBookCollection(userId);
   return (
     <>
       <Navigation variant="authenticated" />
@@ -31,7 +31,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ user
             <span className="welcome-flourish" aria-hidden="true">♡</span>
           </div>
 
-          <DashboardTabs activeTab="dashboard" userId={userId} shareToken={shareToken} />
+          <DashboardTabs activeTab="dashboard" userId={userId} />
 
           <div className="dashboard-grid">
             <InviteCard userId={userId} />

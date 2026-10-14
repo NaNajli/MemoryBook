@@ -1,3 +1,4 @@
+import { getCurrentUserId } from "@/lib/currentUser";
 import DashboardTabs from "../components/dashboard/DashboardTabs";
 import SortableBooks from "../components/dashboard/SortableBooks";
 import { connection } from "next/server";
@@ -11,6 +12,7 @@ export const metadata = { robots: { index: false, follow: false }, referrer: "no
 export default async function BooksPage({ searchParams }: { searchParams: Promise<{ share?: string; userId?: string }> }) {
   await connection();
   const { share, userId: legacyId } = await searchParams;
+  if (share === undefined) await getCurrentUserId();
   if (legacyId !== undefined) notFound();
   const userId = await resolveCollectionUser(share);
   if (userId === null) notFound();

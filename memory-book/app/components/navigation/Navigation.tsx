@@ -6,8 +6,7 @@ type NavigationProps = {
 };
 
 export default function Navigation({ variant = "public" }: NavigationProps) {
-  // TODO: Replace this explicit variant with the real authentication session
-  // once authentication is implemented and configured for the application.
+  // Navigation presentation only; pages and API routes enforce session access.
   return variant === "authenticated" ? (
     <AuthenticatedNavigation />
   ) : (

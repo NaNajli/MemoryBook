@@ -11,7 +11,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -22,10 +22,8 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-
-        // Redirect directly to dashboard
-        window.location.href = "/dashboard";
+        // The server validates the user and sets an HttpOnly session cookie.
+        window.location.href = data.redirectTo;
       } else {
         setMessage(data.error || "Login failed");
       }

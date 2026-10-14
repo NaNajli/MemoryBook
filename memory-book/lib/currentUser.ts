@@ -1,5 +1,8 @@
-// TODO: Replace with the authenticated session's user ID when login is connected.
-// Keep collection reads and memory creation on the same temporary account.
-export function getCurrentUserId(): number {
-  return 1;
+import { redirect } from "next/navigation";
+import { getSessionUserId } from "@/lib/session";
+
+export async function getCurrentUserId(): Promise<number> {
+  const userId = await getSessionUserId();
+  if (userId === null) redirect("/login");
+  return userId;
 }

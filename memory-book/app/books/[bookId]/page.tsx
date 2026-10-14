@@ -1,3 +1,4 @@
+import { getCurrentUserId } from "@/lib/currentUser";
 import { notFound } from "next/navigation";
 import { resolveCollectionUser } from "@/lib/shareLinks";
 import Link from "next/link";
@@ -15,6 +16,7 @@ export default async function BookPage({
   const { bookId } = await params;
   const id = Number(bookId);
   const { topic, share, userId: requestedUserId } = await searchParams;
+  if (share === undefined) await getCurrentUserId();
   if (requestedUserId !== undefined || Array.isArray(share)) notFound();
   const userId = await resolveCollectionUser(share);
   if (userId === null) notFound();
