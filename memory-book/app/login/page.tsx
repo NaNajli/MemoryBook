@@ -19,7 +19,10 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
+      if (!data) {
+        throw new Error(`The authentication endpoint returned an unexpected response (HTTP ${response.status}). Check that the latest server routes are deployed.`);
+      }
 
       if (response.ok) {
         // The server validates the user and sets an HttpOnly session cookie.
@@ -27,8 +30,8 @@ export default function Login() {
       } else {
         setMessage(data.error || "Login failed");
       }
-    } catch {
-      setMessage("Unable to connect to server");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to connect to server");
     }
   }
 

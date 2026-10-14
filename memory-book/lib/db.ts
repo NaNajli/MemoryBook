@@ -1,6 +1,8 @@
 import { Pool } from "pg";
 
 const pool = new Pool({
+    connectionTimeoutMillis: 10000,
+    query_timeout: 15000,
     ...(process.env.DB_HOST
         ? {
             host: process.env.DB_HOST,

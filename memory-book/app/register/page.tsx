@@ -24,7 +24,10 @@ export default function Register() {
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
+      if (!data) {
+        throw new Error(`The authentication endpoint returned an unexpected response (HTTP ${response.status}). Check that the latest server routes are deployed.`);
+      }
 
       if (response.ok) {
         setMessage(
@@ -37,8 +40,8 @@ export default function Register() {
       } else {
         setMessage(data.error || "Registration failed");
       }
-    } catch {
-      setMessage("Unable to connect to server");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to connect to server");
     }
   }
 
