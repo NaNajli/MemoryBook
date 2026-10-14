@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Navigation from "../components/navigation/Navigation";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -36,7 +37,9 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-100">
+    <>
+      <Navigation />
+      <main className="flex-1 flex items-center justify-center bg-stone-100 px-4 py-12">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg"
@@ -76,6 +79,7 @@ export default function Login() {
           </p>
         )}
       </form>
-    </div>
+      </main>
+    </>
   );
 }
