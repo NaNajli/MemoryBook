@@ -31,7 +31,7 @@ export default async function BookPage() {
   );
 }
 
-export async function BooksList() {
+async function BooksList() {
   const book = await getBook(1);
 
   

@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import pool from "@/lib/db";
-import { getCurrentUserId } from "@/lib/currentUser";
+import { getSessionUserId } from "@/lib/session";
 
 export async function getOrCreateShareToken(userId: number): Promise<string> {
   const result = await pool.query<{ token: string }>(
@@ -21,7 +21,7 @@ export async function resolveShareToken(token: unknown): Promise<number | null> 
 }
 
 // Guest access must resolve a token; never trust a client-supplied owner ID.
-// Owner-only routes still use the existing temporary current-user implementation.
+// Without a guest credential, require an authenticated owner session.
 export async function resolveCollectionUser(token: unknown): Promise<number | null> {
-  return token === undefined || token === null ? getCurrentUserId() : resolveShareToken(token);
+  return token === undefined || token === null ? getSessionUserId() : resolveShareToken(token);
 }

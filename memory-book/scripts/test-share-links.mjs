@@ -21,7 +21,7 @@ const pool = { async query(sql, args) {
   }
   throw new Error("Unexpected query");
 } };
-const links = await load("../lib/shareLinks.ts", { pool, randomBytes, getCurrentUserId: () => 1 },
+const links = await load("../lib/shareLinks.ts", { pool, randomBytes, getSessionUserId: async () => null },
   "getOrCreateShareToken, resolveShareToken, resolveCollectionUser");
 const token = await links.getOrCreateShareToken(42);
 assert.match(token, /^[0-9a-f]{64}$/);
@@ -58,7 +58,7 @@ assert.equal((await submit({ share: token })).status, 403);
 console.log("PASS: random, reusable, distinct tokens; owner resolution; anonymous contributions; invalid, legacy and revoked links rejected.");
 
 const { POST: getShareLink } = await load("../app/api/share-links/route.ts", {
-  pool: { query: async (_sql, [id]) => ({ rows: id === 44 || id === 2 ? [{ id }] : [] }) }, getOrCreateShareToken: links.getOrCreateShareToken,
+  getSessionUserId: async () => 44, getOrCreateShareToken: links.getOrCreateShareToken,
 }, "POST");
 const shareRequest = () => new Request("https://memorybook.example/api/share-links", {
   method: "POST", headers: { origin: "https://memorybook.example", "Content-Type": "application/json" },
@@ -77,18 +77,20 @@ const blocked = await getShareLink(new Request("https://memorybook.example/api/s
 }));
 assert.equal(blocked.status, 403);
 const { POST: failedShareLink } = await load("../app/api/share-links/route.ts", {
-  pool: { query: async () => ({ rows: [{ id: 44 }] }) }, getOrCreateShareToken: async () => { throw new Error("Database unavailable"); },
+  getSessionUserId: async () => 44, getOrCreateShareToken: async () => { throw new Error("Database unavailable"); },
 }, "POST");
 assert.equal((await failedShareLink(shareRequest())).status, 500);
 console.log("PASS: Copy Link endpoint creates missing links, reuses stored links, prevents cross-origin access, and reports database failures.");
 
-const requestForUser = userId => new Request("https://memorybook.example/api/share-links", {
-  method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }),
-});
-const userTwoLink = await getShareLink(requestForUser(2));
-assert.equal(userTwoLink.status, 200);
-assert.equal((await userTwoLink.json()).sharePath, `/share/${tokens.get(2)}`);
-assert.notEqual(tokens.get(2), tokens.get(44));
-assert.equal((await getShareLink(requestForUser(999))).status, 404);
-for (const id of [0, -1, 1.5, "2", null]) assert.equal((await getShareLink(requestForUser(id))).status, 400);
-console.log("PASS: dashboard 2 receives its own token; invalid and nonexistent users are rejected.");
+// Client-supplied IDs cannot select another owner.
+const impersonation = await getShareLink(new Request("https://memorybook.example/api/share-links", {
+  method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: 2 }),
+}));
+assert.equal((await impersonation.json()).sharePath, firstLink);
+const { POST: anonymousShareLink } = await load("../app/api/share-links/route.ts", {
+  getSessionUserId: async () => null, getOrCreateShareToken: links.getOrCreateShareToken,
+}, "POST");
+assert.equal((await anonymousShareLink(shareRequest())).status, 401);
+assert.equal(await links.resolveCollectionUser(undefined), null);
+assert.equal((await submit({})).status, 403);
+console.log("PASS: session owner controls share-link creation; anonymous owner access and impersonation rejected.");

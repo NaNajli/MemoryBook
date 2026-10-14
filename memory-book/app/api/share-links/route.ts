@@ -1,4 +1,4 @@
-import pool from "@/lib/db";
+import { getSessionUserId } from "@/lib/session";
 import { getOrCreateShareToken } from "@/lib/shareLinks";
 
 export async function POST(request: Request) {
@@ -7,19 +7,9 @@ export async function POST(request: Request) {
   if (origin && origin !== new URL(request.url).origin) {
     return Response.json({ message: "Invalid request origin." }, { status: 403 });
   }
-  let userId: number;
+  const userId = await getSessionUserId();
+  if (userId === null) return Response.json({ message: "Please log in." }, { status: 401 });
   try {
-    const body = await request.json();
-    if (typeof body?.userId !== "number" || !Number.isSafeInteger(body.userId) || body.userId <= 0) throw new Error();
-    userId = body.userId;
-
-  } catch {
-    return Response.json({ message: "Invalid dashboard user." }, { status: 400 });
-  }
-  try {
-    // Temporary owner-dashboard access until owner sessions are connected.
-    const user = await pool.query("SELECT id FROM users WHERE id = $1", [userId]);
-    if (!user.rows.length) return Response.json({ message: "User not found." }, { status: 404 });
     const token = await getOrCreateShareToken(userId);
     const sharePath = `/share/${token}`;
     return Response.json({ sharePath }, {

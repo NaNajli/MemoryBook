@@ -9,9 +9,9 @@ const authenticatedLinks = [
 ];
 
 export default function AuthenticatedNavigation() {
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
+  const handleLogout = async () => {
+    const response = await fetch("/api/auth/logout", { method: "POST" });
+    if (response.ok) window.location.href = "/";
   };
 
   return (

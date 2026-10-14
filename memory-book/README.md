@@ -49,11 +49,27 @@ installations include the table in `scripts/database-schema.sql`. Delete a
 user's `share_links` row to revoke their link; clicking Copy Link again
 creates a new link. Treat tokens as secrets and do not log or commit them.
 
-Run focused tests with `node scripts/test-share-links.mjs`. Owner dashboards currently allow any existing user ID at `/dashboard/<userId>`
-and are intended for development until login is connected. Each dashboard uses
-its own share token for book viewing, contributions, and downloads; Copy Link
-also targets that dashboard user. The dashboard initializes a token for these
-links, and Copy Link retrieves or recreates it as needed. `lib/currentUser.ts`
-still returns account 1 for default owner routes. Connect real owner-session
-authentication and restrict share-link creation to that owner before treating
-the application as private.
+Run focused guest-access tests with `node scripts/test-share-links.mjs`.
+
+### Server-side authentication
+
+Login and registration use same-origin Next.js handlers in `app/api/auth`.
+The handlers query `users` using the database configured in `lib/db.ts` and
+verify existing bcrypt password hashes. The separate Express backend is not
+needed for login. Keep the existing database configuration in Vercel: either
+`DATABASE_URL`, or `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, and `DB_PASSWORD`.
+Never prefix database credentials with `NEXT_PUBLIC_`.
+
+Sessions are stored in `auth_sessions`. Login creates this table if missing;
+if the database role cannot create tables, run `scripts/create-auth-sessions.sql`
+once with a migration role. No JWT secret is required for these opaque sessions.
+The browser receives an HttpOnly cookie, Secure in production, valid for seven
+days. Logout deletes the server session and cookie. Previous localStorage JWTs
+are no longer accepted; users must log in again.
+
+Successful login redirects to `/dashboard/<logged-in-user-id>`. `/dashboard`
+redirects to the same owner dashboard; another user's dashboard returns 404.
+Owner book, contribution, and share-link operations use the session identity.
+Valid guest share links retain anonymous viewing, contribution, and downloads.
+
+Run authentication tests with `node scripts/test-auth.mjs`, then `pnpm build`.
